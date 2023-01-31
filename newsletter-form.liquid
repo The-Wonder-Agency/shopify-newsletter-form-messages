@@ -1,0 +1,43 @@
+{% form 'customer', id: 'newsletter-form', class: 'contact-form form-single-field' %}
+  {% if form.posted_successfully? %}
+    <p class="form-message form-message--success" tabindex="-1" autofocus>
+      Success message here
+    </p>
+  {% elsif form.errors %}
+    <div class="errors" tabindex="-1" autofocus>
+      <ul class="form-status-list" role="list">
+        <li>
+          {{ form.errors.translated_fields.email | capitalize }}
+          {{ form.errors.messages.email }}
+        </li>
+      </ul>
+    </div>
+  {% elsif form.posted_successfully? == false and form.errors == null and form.tags == 'newsletter' and form.email contains '@' %}
+    <p class="form-message form-message--success" tabindex="-1" autofocus>
+        Already subscribed message here
+    </p>
+  {%- endif -%}
+  
+  <input
+    type="email"
+    name="contact[email]"
+    aria-required="true"
+    value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+    {% if form.errors contains 'email' %}
+      aria-invalid="true"
+      aria-describedby="ContactForm-email-error"
+    {% endif %}
+  >
+  
+  {% if form.errors contains 'email' %}
+    <small id="ContactForm-email-error">
+      <span class="form__message">
+        {{- form.errors.translated_fields.email | capitalize }}
+        {{ form.errors.messages.email -}}
+      </span>
+    </small>
+  {% endif %}
+
+  <input type="hidden" name="contact[tags]" value="newsletter">
+  <input type="submit" name="commit" value="Submit">
+{% endform %}
